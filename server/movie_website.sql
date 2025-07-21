@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 15, 2025 lúc 04:13 PM
+-- Thời gian đã tạo: Th7 21, 2025 lúc 12:15 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -65,7 +65,8 @@ CREATE TABLE `banners` (
 
 INSERT INTO `banners` (`id`, `movie_id`, `bg_url`, `title_url`, `thumbnails`, `created_at`) VALUES
 (1, 1, 'https://static.nutscdn.com/vimg/1920-0/9cc9d2008cb739de22bfa2ecb02f623c.webp&quot', 'https://static.nutscdn.com/vimg/0-260/d77163d9c75119a0933b0be98f6e798a.png', '[\"https://static.nutscdn.com/vimg/1920-0/9cc9d2008cb739de22bfa2ecb02f623c.webp&quot\"]', '2025-07-11 00:00:00'),
-(2, 10, 'https://static.nutscdn.com/vimg/1920-0/0d7e0179ed1c60fa3caf57cea4ed6663.webp', 'https://static.nutscdn.com/vimg/0-260/ebfb0189613d2ccfc8734c2efbd9de5e.png', '[\"https://static.nutscdn.com/vimg/1920-0/0d7e0179ed1c60fa3caf57cea4ed6663.webp\"]', '2025-07-11 00:00:00');
+(2, 10, 'https://static.nutscdn.com/vimg/1920-0/0d7e0179ed1c60fa3caf57cea4ed6663.webp', 'https://static.nutscdn.com/vimg/0-260/ebfb0189613d2ccfc8734c2efbd9de5e.png', '[\"https://static.nutscdn.com/vimg/1920-0/0d7e0179ed1c60fa3caf57cea4ed6663.webp\"]', '2025-07-11 00:00:00'),
+(4, 16, 'https://static.nutscdn.com/vimg/1920-0/f92a70bbd84ec57fa3e81239da6bd44b.webp&quot', 'https://static.nutscdn.com/vimg/0-260/44386cc9a8fd46755e4984ee247c5697.png', '[\"https://static.nutscdn.com/vimg/1920-0/f92a70bbd84ec57fa3e81239da6bd44b.webp&quot\"]', '2025-07-15 23:10:15');
 
 -- --------------------------------------------------------
 
@@ -89,7 +90,7 @@ INSERT INTO `countries` (`id`, `name`) VALUES
 (4, 'Mỹ'),
 (5, 'Nhật Bản'),
 (7, 'Anh'),
-(10, 'Đức');
+(16, 'Đức');
 
 -- --------------------------------------------------------
 
@@ -110,7 +111,7 @@ CREATE TABLE `directors` (
 
 INSERT INTO `directors` (`id`, `name`, `profile_pic_url`, `bio`) VALUES
 (1, 'Zhang Yimou', 'https://via.placeholder.com/100x100', 'Đạo diễn nổi tiếng Trung Quốc với nhiều tác phẩm đình đám'),
-(2, 'Zhang Yimou', 'https://via.placeholder.com/100x100', 'Đạo diễn nổi tiếng Trung Quốc với nhiều tác phẩm đình đám');
+(3, 'ABC', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -151,7 +152,8 @@ INSERT INTO `episodes` (`id`, `movie_id`, `episode_number`, `title`, `video_url`
 (16, 12, 15, 'Tập 15', 'https://example.com/video/episode-15.mp4', 'https://example.com/subtitle/episode-15.srt', '2025-07-12 12:18:54'),
 (17, 12, 16, 'Tập 16', 'https://example.com/video/episode-16.mp4', 'https://example.com/subtitle/episode-16.srt', '2025-07-12 12:18:54'),
 (18, 12, 17, 'Tập 17', 'https://example.com/video/episode-17.mp4', 'https://example.com/subtitle/episode-17.srt', '2025-07-12 12:18:54'),
-(19, 12, 18, 'Tập 18', 'https://example.com/video/episode-18.mp4', 'https://example.com/subtitle/episode-18.srt', '2025-07-12 12:18:54');
+(19, 12, 18, 'Tập 18', 'https://example.com/video/episode-18.mp4', 'https://example.com/subtitle/episode-18.srt', '2025-07-12 12:18:54'),
+(22, 16, 1, 'abc', 'http://localhost/videos/the-unholy-trinity.mp4', NULL, '2025-07-15 23:01:35');
 
 -- --------------------------------------------------------
 
@@ -245,13 +247,12 @@ INSERT INTO `movies` (`id`, `title`, `age_limit`, `original_title`, `slug`, `des
 (5, 'The Dark Knight', NULL, NULL, 'the-dark-knight', 'Batman faces the Joker, a criminal mastermind who wants to plunge Gotham City into anarchy.', 2008, '2h32m', 0, 'https://image.tmdb.org/t/p/original/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 9, 'completed', '2025-07-09 16:01:38', NULL),
 (6, 'Your Name', NULL, NULL, 'your-name', 'Two teenagers share a profound, magical connection upon discovering they are swapping bodies.', 2016, '1h46m', 0, 'https://image.tmdb.org/t/p/original/q719jXXEzOoYaps6babgKnONONX.jpg', 'https://www.youtube.com/watch?v=xU47nhruN-Q', 8.4, 'completed', '2025-07-09 16:01:38', NULL),
 (7, 'Joker', NULL, NULL, 'joker', 'In Gotham City, mentally troubled comedian Arthur Fleck is disregarded and mistreated by society.', 2019, '2h2m', 0, 'https://image.tmdb.org/t/p/original/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg', 'https://www.youtube.com/watch?v=zAGVQLHvwOY', 8.5, 'completed', '2025-07-09 16:01:38', NULL),
-(8, 'Spirited Away', NULL, NULL, 'spirited-away', 'During her family\'s move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits.', 2001, '2h5m', 0, 'https://image.tmdb.org/t/p/original/oRvMaJOmapypFUcQqpgHMZA6qL9.jpg', 'https://www.youtube.com/watch?v=ByXuk9QqQkk', 8.6, 'completed', '2025-07-09 16:01:38', NULL),
-(9, 'Avengers: Endgame', NULL, NULL, 'avengers-endgame', 'After the devastating events of Avengers: Infinity War, the universe is in ruins.', 2019, '3h1m', 0, 'https://image.tmdb.org/t/p/original/ulzhLuWrPK07P1YkdWQLZnQh1JL.jpg', 'https://www.youtube.com/watch?v=TcMBFSGVi1c', 8.4, 'completed', '2025-07-09 15:57:59', NULL),
 (10, 'Từ Vũ Trụ John Wick: Ballerina', 'T16', 'Ballerina', 'ballerina', 'Lấy bối cảnh giữa sự kiện của Sát thủ John Wick: Phần 3 – Chuẩn Bị Chiến Tranh, bộ phim Từ Vũ Trụ John Wick: Ballerina theo chân Eve Macarro (thủ vai bởi Ana de Armas) trên hành trình trả thù cho cái chết của gia đình mình, dưới sự huấn luyện của tổ chức tội phạm Ruska Roma.', 2025, '2h05m', 0, 'https://static.nutscdn.com/vimg/300-0/fe15c492d94cdcaf1e5e379f44b94d59.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 7, 'completed', '2025-07-09 15:57:59', '4K'),
-(12, 'Chiến Binh Thép', NULL, NULL, 'chien-binh-thep', 'Linh khí đất trời hội tụ sinh ra một viên ngọc chứa đựng năng lượng khổng lồ của Linh Châu và Ma Hoàn. Viên Linh Châu sẽ đầu thai thành người, Ma Hoàn trở thành ma vương. Nhưng sự sắp đặt đó lại sai lệch hoàn toàn khi Na Tra - anh hùng cứu thế lại trở thành Hỗn Thế Ma Vương.', 2025, '2h05m', 1, 'https://img.phimchill.tv/images/film/chi%C3%AAn-binh-th%C3%A9p-thumb.jpg', 'https://www.youtube.com/watch?v=example', 8.5, 'ongoing', '2025-07-12 12:18:54', NULL),
+(12, 'Chiến Binh Thép', 'T16', 'Tin Soldier', 'chien-binh-thep', 'Tin Soldier xoay quanh nhân vật Nash Cavanaugh (Scott Eastwood thủ vai), một cựu đặc nhiệm tìm cách trả thù Bokushi (Jamie Foxx), thủ lĩnh một giáo phái đã lôi kéo các cựu chiến binh Mỹ vào một chương trình huấn luyện cực đoan. Sau nhiều nỗ lực xâm nhập thất bại, đặc vụ quân đội Emmanuel Ashburn (Robert De Niro) quyết định hợp tác với Nash để thâm nhập vào pháo đài kiên cố của Bokushi và vạch trần sự thật.', 2025, '1h27m', 1, 'https://static.nutscdn.com/vimg/300-0/677ba8c0eb6e8aee4db72e569e9c8d95.jpg', 'https://www.youtube.com/watch?v=example', 3.4, 'ongoing', '2025-07-12 12:18:54', NULL),
 (13, 'Người Sắt', NULL, NULL, NULL, 'Phim siêu anh hùng về Tony Stark', 2008, '2h06m', NULL, 'https://via.placeholder.com/300x450', NULL, 7.9, NULL, '2025-07-12 12:18:54', NULL),
 (14, 'Batman Begins', NULL, NULL, NULL, 'Khởi nguồn của Batman', 2005, '2h20m', NULL, 'https://via.placeholder.com/300x450', NULL, 8.2, NULL, '2025-07-12 12:18:54', NULL),
-(15, 'The Matrix', NULL, NULL, NULL, 'Phim khoa học viễn tưởng kinh điển', 1999, '2h16m', NULL, 'https://via.placeholder.com/300x450', NULL, 8.7, NULL, '2025-07-12 12:18:54', NULL);
+(15, 'The Matrix', NULL, NULL, NULL, 'Phim khoa học viễn tưởng kinh điển', 1999, '2h16m', NULL, 'https://via.placeholder.com/300x450', NULL, 8.7, NULL, '2025-07-12 12:18:54', NULL),
+(16, 'M3GAN 2.0', 'T18', 'M3GAN 2.0', NULL, 'MEGAN 2.0 lấy bối cảnh 2 năm sau các sự kiện ở phần 1. Lúc này, Gemma phát hiện công nghệ sản xuất MEGAN đã bị đánh cắp. Kẻ gian đã tạo ra một robot AI khác với chức năng tương tự MEGAN, nhưng được trang bị sức mạnh chiến đấu \"khủng\" hơn mang tên Amelia. Để \"đối đầu\" với Amelia, Gemma buộc phải \"hồi sinh\" và cải tiến MEGAN, hứa hẹn một trận chiến \"nảy lửa\" trên màn ảnh vào năm 2025.', 2025, '1h40m', NULL, 'https://static.nutscdn.com/vimg/300-0/9fdba340ff590a5c4038148213e25486.jpg', NULL, 6.3, NULL, '2025-07-15 22:44:00', '4K');
 
 -- --------------------------------------------------------
 
@@ -271,7 +272,8 @@ CREATE TABLE `movie_actors` (
 INSERT INTO `movie_actors` (`movie_id`, `actor_id`) VALUES
 (1, 1),
 (1, 2),
-(1, 3);
+(1, 3),
+(15, 3);
 
 -- --------------------------------------------------------
 
@@ -290,7 +292,12 @@ CREATE TABLE `movie_countries` (
 
 INSERT INTO `movie_countries` (`movie_id`, `country_id`) VALUES
 (1, 4),
-(2, 7);
+(2, 7),
+(12, 4),
+(12, 7),
+(13, 7),
+(15, 4),
+(16, 4);
 
 -- --------------------------------------------------------
 
@@ -308,7 +315,7 @@ CREATE TABLE `movie_directors` (
 --
 
 INSERT INTO `movie_directors` (`movie_id`, `director_id`) VALUES
-(12, 2);
+(15, 3);
 
 -- --------------------------------------------------------
 
@@ -338,12 +345,22 @@ INSERT INTO `movie_genres` (`movie_id`, `genre_id`) VALUES
 (10, 2),
 (10, 3),
 (12, 1),
-(12, 15),
+(12, 5),
 (12, 17),
-(12, 19),
-(13, 1),
+(13, 16),
 (14, 1),
-(15, 1);
+(15, 3),
+(15, 7),
+(15, 8),
+(15, 17),
+(15, 36),
+(15, 44),
+(16, 3),
+(16, 7),
+(16, 8),
+(16, 17),
+(16, 36),
+(16, 44);
 
 -- --------------------------------------------------------
 
@@ -355,13 +372,6 @@ CREATE TABLE `movie_producer` (
   `movie_id` int(11) NOT NULL,
   `producer_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `movie_producer`
---
-
-INSERT INTO `movie_producer` (`movie_id`, `producer_id`) VALUES
-(1, 1);
 
 -- --------------------------------------------------------
 
@@ -380,7 +390,7 @@ CREATE TABLE `producers` (
 --
 
 INSERT INTO `producers` (`id`, `name`, `country_id`) VALUES
-(1, 'ABC', 4);
+(2, 'ABC', 4);
 
 -- --------------------------------------------------------
 
@@ -404,8 +414,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `gender`, `password`, `email`, `is_admin`, `created_at`) VALUES
 (1, 'Admin', 'male', '$2b$10$eRkghm5P/a6P69TCMVaYwuTE4I7SAzNrqD6ZHr0WEJXwPZ.EChuIu', 'admin@gmail.com', 1, '2025-06-30 10:16:01'),
-(8, 'abc2', NULL, '$2b$10$glFoblKMSzqsPLvlW2S6reKGtFoCADxumSyZOnIfToOlTRKSGTDUe', 'abc@gmail.com', 0, '2025-06-30 12:56:10'),
-(9, 'bcd', 'male', '$2b$10$9oPVfgOR7JGpKsJdAbLY8uQvUFZv8ekWClrMD8AFMroK4hdKCOh2W', 'bcd@gmail.com', 0, '2025-07-15 14:02:55');
+(8, 'abc2', 'female', '$2b$10$glFoblKMSzqsPLvlW2S6reKGtFoCADxumSyZOnIfToOlTRKSGTDUe', 'abc@gmail.com', 0, '2025-06-30 12:56:10'),
+(9, 'bcd', 'other', '$2b$10$9oPVfgOR7JGpKsJdAbLY8uQvUFZv8ekWClrMD8AFMroK4hdKCOh2W', 'bcd@gmail.com', 0, '2025-07-15 14:02:55');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -513,49 +523,49 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `actors`
 --
 ALTER TABLE `actors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `banners`
 --
 ALTER TABLE `banners`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `countries`
 --
 ALTER TABLE `countries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `directors`
 --
 ALTER TABLE `directors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `episodes`
 --
 ALTER TABLE `episodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `genres`
 --
 ALTER TABLE `genres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT cho bảng `movies`
 --
 ALTER TABLE `movies`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `producers`
 --
 ALTER TABLE `producers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
