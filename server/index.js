@@ -5,7 +5,10 @@ const mysql = require('mysql2/promise');
 const routes = require('./routes');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 // Kết nối MySQL

@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Fab, Zoom } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const location = useLocation();
+
+  // Tự động scroll lên đầu trang khi route thay đổi
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [location.pathname]);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 300);

@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import MovieSlider from '../components/MovieSlider';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Banner from '../components/Banner';
 
 export default function Home() {
   const [newMovies, setNewMovies] = useState([]);
@@ -9,15 +10,25 @@ export default function Home() {
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/movies').then(res => {
-      setNewMovies(res.data.slice(0, 8));
-      setTopSeries(res.data.slice(0, 10)); // demo, thực tế nên có API riêng
+      // Map lại dữ liệu để MovieSlider nhận đúng trường poster
+      const movies = res.data.slice(0, 16).map(movie => ({
+        ...movie,
+        poster: movie.poster_url, // map đúng trường cho MovieSlider
+        originalTitle: movie.original_title || movie.title,
+      }));
+      setNewMovies(movies);
+      setTopSeries(res.data.slice(0, 10));
     });
   }, []);
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '1400px', mx: 'auto', px: { xs: 1, md: 3 }, mt: 4 }}>
-      <MovieSlider movies={newMovies} title="Phim Lẻ" />
-      <MovieSlider movies={topSeries} title="Phim Bộ" />
+    <Box sx={{ width: '100%', maxWidth: 2000, mx: 'auto', px: { xs: 6, md: 9 } }}>
+      <Banner />
+      <Box sx={{ width: '100%', mt: 7, mb: 6 }}>
+        <Box sx={{ width: '100%', maxWidth: 2000, mx: 'auto' }}>
+          <MovieSlider movies={newMovies} title="Tất cả phim" />
+        </Box>
+      </Box>
     </Box>
   );
 } 
