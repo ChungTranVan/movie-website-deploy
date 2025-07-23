@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, IconButton } from '@mui/material';
 import MovieIcon from '@mui/icons-material/Movie';
 import CategoryIcon from '@mui/icons-material/Category';
 import PeopleIcon from '@mui/icons-material/People';
@@ -7,6 +7,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import ImageIcon from '@mui/icons-material/Image';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
+import CloseIcon from '@mui/icons-material/Close';
 
 const menuItems = [
   { key: 'dashboard', label: 'Thống kê', icon: <BarChartIcon /> },
@@ -16,11 +17,35 @@ const menuItems = [
   { key: 'users', label: 'Quản lý user', icon: <PeopleIcon /> },
 ];
 
-export default function Sidebar({ selected, onSelect }) {
+export default function Sidebar({ selected, onSelect, open = true, onClose }) {
+  if (!open) return null;
   return (
-    <aside style={{ width: 220, background: '#20222b', minHeight: '100vh', color: '#fff', boxShadow: '2px 0 8px #0002', display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'space-between', position: 'fixed', top: 0, left: 0, zIndex: 1200 }}>
+    <aside style={{
+      width: 320,
+      background: '#20222b',
+      minHeight: '100vh',
+      color: '#fff',
+      boxShadow: '2px 0 8px #0002',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      justifyContent: 'space-between',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 1200,
+      transform: open ? 'translateX(0)' : 'translateX(-100%)',
+      transition: 'transform 0.35s cubic-bezier(.4,1.6,.6,1)',
+    }}>
       <div>
-        <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 20, textAlign: 'center', py: 2, letterSpacing: 1 }}>Admin Dashboard</Typography>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px 0 0' }}>
+          <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: 20, textAlign: 'center', py: 2, letterSpacing: 1, flex: 1 }}>Admin Dashboard</Typography>
+          {onClose && (
+            <IconButton onClick={onClose} sx={{ ml: 1, bgcolor: 'transparent', color: '#fff', '&:hover': { bgcolor: '#333' }, p: 1, borderRadius: '50%' }} size="large">
+              <CloseIcon sx={{ fontSize: 30 }} />
+            </IconButton>
+          )}
+        </div>
         <List>
           {menuItems.map(item => (
             <ListItem key={item.key} disablePadding>

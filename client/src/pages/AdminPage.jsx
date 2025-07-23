@@ -11,6 +11,14 @@ import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import MovieIcon from '@mui/icons-material/Movie';
+import ImageIcon from '@mui/icons-material/Image';
+import CategoryIcon from '@mui/icons-material/Category';
+import PeopleIcon from '@mui/icons-material/People';
+import HomeIcon from '@mui/icons-material/Home';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function Admin() {
   const [movies, setMovies] = useState([]);
@@ -323,7 +331,7 @@ export default function Admin() {
   const handleDelete = async (id) => {
     if (!window.confirm('Xóa phim này?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/movies/${id}`, { data: { is_admin: true } });
+      await axios.delete(`http://localhost:5000/api/movies/${id}?is_admin=true`);
       fetchMovies();
     } catch (err) {
       setError(err.response?.data?.message || 'Lỗi');
@@ -397,12 +405,57 @@ export default function Admin() {
   const selectOverrideSx = { '& option': { color: '#111', background: '#fff' } };
 
   const currentUserId = user?.id;
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const menuItems = [
+    { key: 'dashboard', icon: <BarChartIcon /> },
+    { key: 'movies', icon: <MovieIcon /> },
+    { key: 'banners', icon: <ImageIcon /> },
+    { key: 'categories', icon: <CategoryIcon /> },
+    { key: 'users', icon: <PeopleIcon /> },
+  ];
 
   return (
     <Box sx={{ display: 'flex', bgcolor: '#181920', minHeight: '100vh' }}>
-      <Sidebar onSelect={setSelectedMenu} selected={selectedMenu} />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      {/* Mini sidebar khi đóng */}
+      {!sidebarOpen && (
+        <Box sx={{ position: 'fixed', top: 0, left: 0, width: 64, height: '100vh', bgcolor: '#20222b', zIndex: 1200, display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 2, boxShadow: '2px 0 8px #0002' }}>
+          {/* Nút mở sidebar */}
+          <Tooltip title="Mở menu" placement="right">
+            <IconButton onClick={() => setSidebarOpen(true)} sx={{ color: '#fff', mb: 2, bgcolor: 'transparent', '&:hover': { bgcolor: '#23243a' } }}>
+              <MenuIcon />
+            </IconButton>
+          </Tooltip>
+          {menuItems.map(item => (
+            <Tooltip key={item.key} title={item.key.charAt(0).toUpperCase() + item.key.slice(1)} placement="right">
+              <IconButton sx={{ color: selectedMenu === item.key ? '#FFD600' : '#fff', mb: 2, bgcolor: selectedMenu === item.key ? '#23243a' : 'transparent', '&:hover': { bgcolor: '#23243a' } }} onClick={() => setSelectedMenu(item.key)}>
+                {item.icon}
+              </IconButton>
+            </Tooltip>
+          ))}
+          <Box sx={{ flexGrow: 1 }} />
+          {/* Home icon */}
+          <Tooltip title="Home" placement="right">
+            <IconButton sx={{ color: '#fff', mb: 2, bgcolor: 'transparent', '&:hover': { bgcolor: '#23243a' } }} onClick={() => { window.location.href = '/'; }}>
+              <HomeIcon />
+            </IconButton>
+          </Tooltip>
+          {/* Logout icon */}
+          <Tooltip title="Đăng xuất" placement="right">
+            <IconButton sx={{ color: '#fff', mb: 2, bgcolor: 'transparent', '&:hover': { bgcolor: '#23243a' } }} onClick={() => { localStorage.removeItem('user'); window.location.href = 'http://localhost:5173/'; }}>
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
+      <Sidebar onSelect={setSelectedMenu} selected={selectedMenu} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Box component="main" sx={{ flexGrow: 1, p: 3, ml: sidebarOpen ? '320px' : 0, transition: 'margin-left 0.2s' }}>
         <Toolbar />
+        {selectedMenu !== 'dashboard' && (
+          <Typography variant="h4" sx={{ color: '#fff', fontWeight: 700, textAlign: 'center', mb: 4, letterSpacing: 2, textShadow: '0 2px 8px #0006' }}>
+            Admin Dashboard
+          </Typography>
+        )}
         {selectedMenu === 'movies' && (
           <Box sx={{ width: '100%', maxWidth: '1400px', mx: 'auto', px: { xs: 1, md: 3 }, mt: 4 }}>
             <Typography variant="h4" gutterBottom sx={{ color: '#fff', fontWeight:700 }}>Quản lý phim</Typography>
@@ -698,7 +751,7 @@ export default function Admin() {
         )}
         {selectedMenu === 'dashboard' && (
           <Box sx={{ width: '100%', maxWidth: '1100px', mx: 'auto', px: { xs: 1, md: 3 }, mt: 4 }}>
-            <Typography variant="h3" gutterBottom sx={{ color: '#fff', fontWeight: 800, textAlign: 'center', mb: 4, letterSpacing: 1 }}>Thống kê & Báo cáo</Typography>
+            <Typography variant="h4" gutterBottom sx={{ color: '#fff', fontWeight: 700, textAlign: 'center', mb: 4, letterSpacing: 1 }}>Thống kê & Báo cáo</Typography>
             {statsError && <Alert severity="error">{statsError}</Alert>}
             {stats && (
               <>

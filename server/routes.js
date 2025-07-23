@@ -656,6 +656,32 @@ router.post('/movies/:id/episodes', async (req, res) => {
   }
 });
 
+// Sửa tập phim
+router.put('/episodes/:id', async (req, res) => {
+  const { episode_number, title, video_url, subtitle_url } = req.body;
+  try {
+    const db = getDb(req);
+    await db.execute(
+      'UPDATE episodes SET episode_number=?, title=?, video_url=?, subtitle_url=? WHERE id=?',
+      [episode_number, title, video_url, subtitle_url || null, req.params.id]
+    );
+    res.json({ message: 'Episode updated' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Xóa tập phim
+router.delete('/episodes/:id', async (req, res) => {
+  try {
+    const db = getDb(req);
+    await db.execute('DELETE FROM episodes WHERE id=?', [req.params.id]);
+    res.json({ message: 'Episode deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // ===== CRUD ACTORS =====
 router.post('/actors', async (req, res) => {
   const { name, profile_pic_url, bio } = req.body;
