@@ -417,6 +417,36 @@ INSERT INTO `users` (`id`, `username`, `gender`, `password`, `email`, `is_admin`
 (8, 'abc2', 'female', '$2b$10$glFoblKMSzqsPLvlW2S6reKGtFoCADxumSyZOnIfToOlTRKSGTDUe', 'abc@gmail.com', 0, '2025-06-30 12:56:10'),
 (9, 'bcd', 'other', '$2b$10$9oPVfgOR7JGpKsJdAbLY8uQvUFZv8ekWClrMD8AFMroK4hdKCOh2W', 'bcd@gmail.com', 0, '2025-07-15 14:02:55');
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `category_genres`
+--
+
+CREATE TABLE `category_genres` (
+  `category_id` int(11) NOT NULL,
+  `genre_id` int(11) NOT NULL,
+  PRIMARY KEY (`category_id`, `genre_id`),
+  FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -516,6 +546,19 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Chỉ mục cho bảng `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `category_genres`
+--
+ALTER TABLE `category_genres`
+  ADD PRIMARY KEY (`category_id`, `genre_id`),
+  ADD KEY `genre_id` (`genre_id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -574,6 +617,12 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT cho bảng `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Các ràng buộc cho các bảng đã đổ
 --
 
@@ -629,6 +678,13 @@ ALTER TABLE `movie_producer`
 --
 ALTER TABLE `producers`
   ADD CONSTRAINT `producers_ibfk_1` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`);
+
+--
+-- Các ràng buộc cho bảng `category_genres`
+--
+ALTER TABLE `category_genres`
+  ADD CONSTRAINT `category_genres_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `category_genres_ibfk_2` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

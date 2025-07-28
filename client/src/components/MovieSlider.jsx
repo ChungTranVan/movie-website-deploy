@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const MAX_VISIBLE = 8;
 const POSTER_WIDTH = 200 + 24;
 
-export default function MovieSlider({ movies, title }) {
+export default function MovieSlider({ movies, title, categoryId, categoryName }) {
   const [startIndex, setStartIndex] = useState(0);
   const [hovered, setHovered] = useState(null);
   const [popupPos, setPopupPos] = useState(null);
@@ -29,6 +29,22 @@ export default function MovieSlider({ movies, title }) {
 
   const handlePrev = () => setStartIndex(i => Math.max(0, i - 1));
   const handleNext = () => setStartIndex(i => Math.min(displayMovies.length - visibleCount, i + 1));
+
+  const handleSeeMore = () => {
+    if (categoryId && categoryName) {
+      // Nếu có danh mục, chuyển đến trang danh sách phim với thông tin danh mục
+      navigate('/movies', { 
+        state: { 
+          categoryId: categoryId, 
+          categoryName: categoryName,
+          filterType: 'category'
+        } 
+      });
+    } else {
+      // Nếu không có danh mục (Tất cả phim), chuyển đến trang danh sách phim bình thường
+      navigate('/movies');
+    }
+  };
 
   const handleMouseEnter = (idx) => {
     hoverTimeout.current = setTimeout(() => {
@@ -128,7 +144,7 @@ export default function MovieSlider({ movies, title }) {
         <Box
           onMouseEnter={() => setSeeMoreHover(true)}
           onMouseLeave={() => setSeeMoreHover(false)}
-          onClick={() => navigate('/movies')}
+          onClick={handleSeeMore}
           sx={{
             display: 'flex',
             alignItems: 'center',

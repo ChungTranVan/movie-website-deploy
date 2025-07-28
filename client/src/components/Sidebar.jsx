@@ -13,7 +13,8 @@ const menuItems = [
   { key: 'dashboard', label: 'Thống kê', icon: <BarChartIcon /> },
   { key: 'movies', label: 'Quản lý phim', icon: <MovieIcon /> },
   { key: 'banners', label: 'Quản lý banner', icon: <ImageIcon /> },
-  { key: 'categories', label: 'Quản lý danh mục', icon: <CategoryIcon /> },
+  { key: 'general', label: 'Quản lý chung', icon: <CategoryIcon /> }, // Đổi tên và key
+  { key: 'categories', label: 'Quản lý danh mục', icon: <CategoryIcon /> }, // Thêm mục mới
   { key: 'users', label: 'Quản lý user', icon: <PeopleIcon /> },
 ];
 

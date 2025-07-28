@@ -5,6 +5,7 @@ import MovieTable from '../components/MovieTable';
 import MovieForm from '../components/MovieForm';
 import EpisodeManager from '../components/EpisodeManager';
 import Sidebar from '../components/Sidebar';
+import CategoryManager from '../components/CategoryManager';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
@@ -574,9 +575,9 @@ export default function Admin() {
             </Dialog>
           </Box>
         )}
-        {selectedMenu === 'categories' && (
+        {selectedMenu === 'general' && (
           <Box sx={{ width: '100%', maxWidth: '1400px', mx: 'auto', px: { xs: 1, md: 3 }, mt: 4 }}>
-            <Typography variant="h4" gutterBottom sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>Quản lý danh mục</Typography>
+            <Typography variant="h4" gutterBottom sx={{ color: '#fff', fontWeight: 700, mb: 3 }}>Quản lý chung</Typography>
             <Tabs
               value={selectedTab}
               onChange={handleCatTabChange}
@@ -664,6 +665,9 @@ export default function Admin() {
               })}
             </Box>
           </Box>
+        )}
+        {selectedMenu === 'categories' && (
+          <CategoryManager />
         )}
         {selectedMenu === 'users' && (
           <Box sx={{ color: '#fff', mt: 4, maxWidth: '1400px', mx: 'auto' }}>

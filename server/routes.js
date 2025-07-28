@@ -1008,4 +1008,157 @@ router.get('/admin/stats', async (req, res) => {
   }
 });
 
+// ==================== CATEGORIES API ====================
+
+// Lấy tất cả danh mục
+router.get('/categories', async (req, res) => {
+  try {
+    const db = getDb(req);
+    const [rows] = await db.execute('SELECT * FROM categories ORDER BY id DESC');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Thêm danh mục mới
+router.post('/categories', async (req, res) => {
+  const { name, genreIds } = req.body;
+  if (!name) return res.status(400).json({ message: 'Tên danh mục không được để trống' });
+  
+  try {
+    const db = getDb(req);
+    const [result] = await db.execute('INSERT INTO categories (name, created_at) VALUES (?, NOW())', [name]);
+    const categoryId = result.insertId;
+    
+    // Thêm liên kết với thể loại nếu có
+    if (Array.isArray(genreIds) && genreIds.length > 0) {
+      for (const genreId of genreIds) {
+        await db.execute('INSERT INTO category_genres (category_id, genre_id) VALUES (?, ?)', [categoryId, genreId]);
+      }
+    }
+    
+    res.json({ success: true, id: categoryId, message: 'Thêm danh mục thành công' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Sửa danh mục
+router.put('/categories/:id', async (req, res) => {
+  const { name, genreIds } = req.body;
+  const categoryId = req.params.id;
+  
+  if (!name) return res.status(400).json({ message: 'Tên danh mục không được để trống' });
+  
+  try {
+    const db = getDb(req);
+    await db.execute('UPDATE categories SET name = ? WHERE id = ?', [name, categoryId]);
+    
+    // Xóa các liên kết thể loại cũ
+    await db.execute('DELETE FROM category_genres WHERE category_id = ?', [categoryId]);
+    
+    // Thêm lại các liên kết thể loại mới
+    if (Array.isArray(genreIds) && genreIds.length > 0) {
+      for (const genreId of genreIds) {
+        await db.execute('INSERT INTO category_genres (category_id, genre_id) VALUES (?, ?)', [categoryId, genreId]);
+      }
+    }
+    
+    res.json({ success: true, message: 'Cập nhật danh mục thành công' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Xóa danh mục
+router.delete('/categories/:id', async (req, res) => {
+  const categoryId = req.params.id;
+  
+  try {
+    const db = getDb(req);
+    await db.execute('DELETE FROM categories WHERE id = ?', [categoryId]);
+    res.json({ success: true, message: 'Xóa danh mục thành công' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Lấy thể loại của danh mục
+router.get('/categories/:id/genres', async (req, res) => {
+  const categoryId = req.params.id;
+  
+  try {
+    const db = getDb(req);
+    const [rows] = await db.execute(
+      `SELECT g.* FROM genres g
+       JOIN category_genres cg ON g.id = cg.genre_id
+       WHERE cg.category_id = ?`,
+      [categoryId]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Lấy phim theo danh mục (dựa trên các thể loại của danh mục)
+router.get('/categories/:id/movies', async (req, res) => {
+  const categoryId = req.params.id;
+  
+  try {
+    const db = getDb(req);
+    
+    // Lấy các genre_id của category này
+    const [genres] = await db.execute(
+      'SELECT genre_id FROM category_genres WHERE category_id = ?',
+      [categoryId]
+    );
+    
+    if (genres.length === 0) {
+      return res.json([]);
+    }
+    
+    const genreIds = genres.map(g => g.genre_id);
+    
+    // Lấy tất cả phim thuộc các genre này
+    const [movies] = await db.execute(
+      `SELECT DISTINCT m.* FROM movies m
+       JOIN movie_genres mg ON m.id = mg.movie_id
+       WHERE mg.genre_id IN (${genreIds.map(() => '?').join(',')})
+       ORDER BY m.created_at DESC`,
+      genreIds
+    );
+    
+    // Thêm thông tin genres và countries cho từng phim
+    const moviesWithDetails = await Promise.all(movies.map(async (movie) => {
+      // Lấy genres của phim
+      const [movieGenres] = await db.execute(
+        `SELECT g.* FROM genres g
+         JOIN movie_genres mg ON g.id = mg.genre_id
+         WHERE mg.movie_id = ?`,
+        [movie.id]
+      );
+      
+      // Lấy countries của phim
+      const [movieCountries] = await db.execute(
+        `SELECT c.* FROM countries c
+         JOIN movie_countries mc ON c.id = mc.country_id
+         WHERE mc.movie_id = ?`,
+        [movie.id]
+      );
+      
+      return {
+        ...movie,
+        genres: movieGenres,
+        countries: movieCountries
+      };
+    }));
+    
+    res.json(moviesWithDetails);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router; 
