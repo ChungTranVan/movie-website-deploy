@@ -70,8 +70,18 @@ export default function Movies() {
   
   useEffect(() => {
     // Cập nhật tiêu đề trang
-    if (categoryInfo && categoryInfo.filterType === 'category') {
+    if (isActorTab) {
+      setPageTitle("Diễn Viên");
+    } else if (categoryInfo && categoryInfo.filterType === 'category') {
       setPageTitle(categoryInfo.categoryName);
+    } else if (genreParam) {
+      setPageTitle(`Phim ${genreParam}`);
+    } else if (countryParam) {
+      setPageTitle(`Phim ${countryParam}`);
+    } else if (isSeries === true) {
+      setPageTitle("Phim Bộ");
+    } else if (isSeries === false) {
+      setPageTitle("Phim Lẻ");
     } else {
       setPageTitle("Danh Sách Phim");
     }
