@@ -131,7 +131,7 @@ router.put('/movies/:id', async (req, res) => {
 
 // Xóa phim (admin)
 router.delete('/movies/:id', async (req, res) => {
-  const { is_admin } = req.body;
+  const is_admin = req.query.is_admin === 'true';
   if (!is_admin) return res.status(403).json({ message: 'Admin only' });
   try {
     const db = getDb(req);
@@ -1015,7 +1015,39 @@ router.get('/categories', async (req, res) => {
   try {
     const db = getDb(req);
     const [rows] = await db.execute('SELECT * FROM categories ORDER BY id DESC');
-    res.json(rows);
+    
+    // Lấy thông tin genres và countries cho từng category
+    const categoriesWithDetails = await Promise.all(rows.map(async (category) => {
+      // Lấy genres của category
+      const [genres] = await db.execute(
+        `SELECT g.* FROM genres g
+         JOIN category_genres cg ON g.id = cg.genre_id
+         WHERE cg.category_id = ?`,
+        [category.id]
+      );
+      
+      // Lấy countries của category (thử-catch để tránh lỗi nếu bảng chưa tồn tại)
+      let countries = [];
+      try {
+        const [countryRows] = await db.execute(
+          `SELECT c.* FROM countries c
+           JOIN category_countries cc ON c.id = cc.country_id
+           WHERE cc.category_id = ?`,
+          [category.id]
+        );
+        countries = countryRows;
+      } catch (err) {
+        console.log('Bảng category_countries chưa tồn tại:', err.message);
+      }
+      
+      return {
+        ...category,
+        genres,
+        countries
+      };
+    }));
+    
+    res.json(categoriesWithDetails);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -1023,7 +1055,7 @@ router.get('/categories', async (req, res) => {
 
 // Thêm danh mục mới
 router.post('/categories', async (req, res) => {
-  const { name, genreIds } = req.body;
+  const { name, genreIds, countryIds } = req.body;
   if (!name) return res.status(400).json({ message: 'Tên danh mục không được để trống' });
   
   try {
@@ -1038,6 +1070,17 @@ router.post('/categories', async (req, res) => {
       }
     }
     
+    // Thêm liên kết với quốc gia nếu có
+    try {
+      if (Array.isArray(countryIds) && countryIds.length > 0) {
+        for (const countryId of countryIds) {
+          await db.execute('INSERT INTO category_countries (category_id, country_id) VALUES (?, ?)', [categoryId, countryId]);
+        }
+      }
+    } catch (err) {
+      console.log('Bảng category_countries chưa tồn tại, bỏ qua xử lý quốc gia:', err.message);
+    }
+    
     res.json({ success: true, id: categoryId, message: 'Thêm danh mục thành công' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -1046,8 +1089,10 @@ router.post('/categories', async (req, res) => {
 
 // Sửa danh mục
 router.put('/categories/:id', async (req, res) => {
-  const { name, genreIds } = req.body;
+  const { name, genreIds, countryIds } = req.body;
   const categoryId = req.params.id;
+  
+  console.log('PUT /categories/:id', { categoryId, name, genreIds, countryIds });
   
   if (!name) return res.status(400).json({ message: 'Tên danh mục không được để trống' });
   
@@ -1065,8 +1110,23 @@ router.put('/categories/:id', async (req, res) => {
       }
     }
     
+    // Xóa các liên kết quốc gia cũ (nếu bảng tồn tại)
+    try {
+      await db.execute('DELETE FROM category_countries WHERE category_id = ?', [categoryId]);
+      
+      // Thêm lại các liên kết quốc gia mới
+      if (Array.isArray(countryIds) && countryIds.length > 0) {
+        for (const countryId of countryIds) {
+          await db.execute('INSERT INTO category_countries (category_id, country_id) VALUES (?, ?)', [categoryId, countryId]);
+        }
+      }
+    } catch (err) {
+      console.log('Bảng category_countries chưa tồn tại, bỏ qua xử lý quốc gia:', err.message);
+    }
+    
     res.json({ success: true, message: 'Cập nhật danh mục thành công' });
   } catch (err) {
+    console.error('Error updating category:', err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -1077,6 +1137,16 @@ router.delete('/categories/:id', async (req, res) => {
   
   try {
     const db = getDb(req);
+    // Xóa các liên kết trước khi xóa category
+    await db.execute('DELETE FROM category_genres WHERE category_id = ?', [categoryId]);
+    
+    // Xóa liên kết quốc gia nếu bảng tồn tại
+    try {
+      await db.execute('DELETE FROM category_countries WHERE category_id = ?', [categoryId]);
+    } catch (err) {
+      console.log('Bảng category_countries chưa tồn tại, bỏ qua:', err.message);
+    }
+    
     await db.execute('DELETE FROM categories WHERE id = ?', [categoryId]);
     res.json({ success: true, message: 'Xóa danh mục thành công' });
   } catch (err) {
@@ -1102,7 +1172,27 @@ router.get('/categories/:id/genres', async (req, res) => {
   }
 });
 
-// Lấy phim theo danh mục (dựa trên các thể loại của danh mục)
+// Lấy quốc gia của danh mục
+router.get('/categories/:id/countries', async (req, res) => {
+  const categoryId = req.params.id;
+  
+  try {
+    const db = getDb(req);
+    const [rows] = await db.execute(
+      `SELECT c.* FROM countries c
+       JOIN category_countries cc ON c.id = cc.country_id
+       WHERE cc.category_id = ?`,
+      [categoryId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.log('Lỗi khi lấy quốc gia của danh mục:', err.message);
+    // Trả về mảng rỗng nếu bảng chưa tồn tại
+    res.json([]);
+  }
+});
+
+// Lấy phim theo danh mục (dựa trên các thể loại và quốc gia của danh mục)
 router.get('/categories/:id/movies', async (req, res) => {
   const categoryId = req.params.id;
   
@@ -1115,20 +1205,44 @@ router.get('/categories/:id/movies', async (req, res) => {
       [categoryId]
     );
     
-    if (genres.length === 0) {
+    // Lấy các country_id của category này
+    const [countries] = await db.execute(
+      'SELECT country_id FROM category_countries WHERE category_id = ?',
+      [categoryId]
+    );
+    
+    if (genres.length === 0 && countries.length === 0) {
       return res.json([]);
     }
     
     const genreIds = genres.map(g => g.genre_id);
+    const countryIds = countries.map(c => c.country_id);
     
-    // Lấy tất cả phim thuộc các genre này
-    const [movies] = await db.execute(
-      `SELECT DISTINCT m.* FROM movies m
-       JOIN movie_genres mg ON m.id = mg.movie_id
-       WHERE mg.genre_id IN (${genreIds.map(() => '?').join(',')})
-       ORDER BY m.created_at DESC`,
-      genreIds
-    );
+    let sql = 'SELECT DISTINCT m.* FROM movies m';
+    let params = [];
+    let conditions = [];
+    
+    // Thêm điều kiện genre nếu có
+    if (genreIds.length > 0) {
+      sql += ' JOIN movie_genres mg ON m.id = mg.movie_id';
+      conditions.push(`mg.genre_id IN (${genreIds.map(() => '?').join(',')})`);
+      params.push(...genreIds);
+    }
+    
+    // Thêm điều kiện country nếu có
+    if (countryIds.length > 0) {
+      sql += ' JOIN movie_countries mc ON m.id = mc.movie_id';
+      conditions.push(`mc.country_id IN (${countryIds.map(() => '?').join(',')})`);
+      params.push(...countryIds);
+    }
+    
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    sql += ' ORDER BY m.created_at DESC';
+    
+    const [movies] = await db.execute(sql, params);
     
     // Thêm thông tin genres và countries cho từng phim
     const moviesWithDetails = await Promise.all(movies.map(async (movie) => {
@@ -1156,6 +1270,25 @@ router.get('/categories/:id/movies', async (req, res) => {
     }));
     
     res.json(moviesWithDetails);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// API để tạo bảng category_countries (chỉ dùng một lần)
+router.post('/setup/category-countries', async (req, res) => {
+  try {
+    const db = getDb(req);
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS \`category_countries\` (
+        \`category_id\` int(11) NOT NULL,
+        \`country_id\` int(11) NOT NULL,
+        PRIMARY KEY (\`category_id\`, \`country_id\`),
+        FOREIGN KEY (\`category_id\`) REFERENCES \`categories\` (\`id\`) ON DELETE CASCADE,
+        FOREIGN KEY (\`country_id\`) REFERENCES \`countries\` (\`id\`) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+    `);
+    res.json({ success: true, message: 'Bảng category_countries đã được tạo thành công' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

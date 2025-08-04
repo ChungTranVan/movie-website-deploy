@@ -13,16 +13,19 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export default function CategoryManager() {
   const [categories, setCategories] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [countries, setCountries] = useState([]);
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({ name: '', genreIds: [] });
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [form, setForm] = useState({ name: '', genreIds: [], countryIds: [] });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Lấy danh mục và thể loại
+  // Lấy danh mục, thể loại và quốc gia
   useEffect(() => {
     fetchCategories();
     fetchGenres();
+    fetchCountries();
   }, []);
 
   const fetchCategories = async () => {
@@ -54,18 +57,36 @@ export default function CategoryManager() {
     }
   };
 
+  const fetchCountries = async () => {
+    try {
+      const response = await fetch(`${API}/api/countries`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setCountries(data);
+    } catch (err) {
+      console.error('Error fetching countries:', err);
+      setError(`Lỗi khi tải quốc gia: ${err.message}`);
+    }
+  };
+
   const handleOpen = (category = null) => {
     if (category) {
       setForm({
         name: category.name,
-        genreIds: []
+        genreIds: [],
+        countryIds: []
       });
       setEditMode(true);
-      // Lấy thể loại của danh mục này
+      setEditingCategoryId(category.id);
+      // Lấy thể loại và quốc gia của danh mục này
       fetchCategoryGenres(category.id);
+      fetchCategoryCountries(category.id);
     } else {
-      setForm({ name: '', genreIds: [] });
+      setForm({ name: '', genreIds: [], countryIds: [] });
       setEditMode(false);
+      setEditingCategoryId(null);
     }
     setOpen(true);
     setError('');
@@ -82,10 +103,21 @@ export default function CategoryManager() {
     }
   };
 
+  const fetchCategoryCountries = async (categoryId) => {
+    try {
+      const response = await fetch(`${API}/api/categories/${categoryId}/countries`);
+      const data = await response.json();
+      setForm(prev => ({ ...prev, countryIds: data.map(c => c.id) }));
+    } catch (err) {
+      console.error('Lỗi khi tải quốc gia của danh mục:', err);
+    }
+  };
+
   const handleClose = () => {
     setOpen(false);
     setEditMode(false);
-    setForm({ name: '', genreIds: [] });
+    setEditingCategoryId(null);
+    setForm({ name: '', genreIds: [], countryIds: [] });
     setError('');
     setSuccess('');
   };
@@ -105,8 +137,10 @@ export default function CategoryManager() {
     }
 
     try {
-      const url = editMode ? `${API}/api/categories/${categories.find(c => c.name === form.name)?.id}` : `${API}/api/categories`;
+      const url = editMode ? `${API}/api/categories/${editingCategoryId}` : `${API}/api/categories`;
       const method = editMode ? 'PUT' : 'POST';
+
+      console.log('Submitting form:', { editMode, editingCategoryId, url, method, form });
 
       const response = await fetch(url, {
         method,
@@ -114,7 +148,9 @@ export default function CategoryManager() {
         body: JSON.stringify(form)
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok) {
         setSuccess(data.message || (editMode ? 'Cập nhật thành công' : 'Thêm thành công'));
@@ -124,6 +160,7 @@ export default function CategoryManager() {
         setError(data.message || 'Có lỗi xảy ra');
       }
     } catch (err) {
+      console.error('Submit error:', err);
       setError('Lỗi kết nối');
     }
   };
@@ -185,9 +222,65 @@ export default function CategoryManager() {
             transition: 'all 0.3s ease'
           }}>
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                 {category.name}
               </Typography>
+              
+              {/* Hiển thị thể loại */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" sx={{ color: '#bbb', mb: 1, fontWeight: 500 }}>
+                  Thể loại:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {category.genres && category.genres.length > 0 ? (
+                    category.genres.map((genre, index) => (
+                      <Chip
+                        key={index}
+                        label={genre.name}
+                        size="small"
+                        sx={{
+                          bgcolor: '#1976d2',
+                          color: '#fff',
+                          fontSize: '0.7rem',
+                          height: 20
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <Typography variant="body2" sx={{ color: '#666', fontStyle: 'italic' }}>
+                      Chưa có thể loại
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Hiển thị quốc gia */}
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="body2" sx={{ color: '#bbb', mb: 1, fontWeight: 500 }}>
+                  Quốc gia:
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {category.countries && category.countries.length > 0 ? (
+                    category.countries.map((country, index) => (
+                      <Chip
+                        key={index}
+                        label={country.name}
+                        size="small"
+                        sx={{
+                          bgcolor: '#4caf50',
+                          color: '#fff',
+                          fontSize: '0.7rem',
+                          height: 20
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <Typography variant="body2" sx={{ color: '#666', fontStyle: 'italic' }}>
+                      Chưa có quốc gia
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
             </CardContent>
             <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
               <Tooltip title="Sửa">
@@ -297,44 +390,65 @@ export default function CategoryManager() {
                   {genre.name}
                 </MenuItem>
               ))}
-              <Divider sx={{ my: 1 }} />
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                p: 1, 
-                gap: 1,
-                bgcolor: '#f5f5f5'
-              }}>
-                <Button 
-                  size="small" 
-                  variant="outlined" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setForm(prev => ({ ...prev, genreIds: [] }));
-                  }}
-                  sx={{ 
-                    fontSize: '0.75rem',
-                    minWidth: 60,
-                    height: 32
-                  }}
-                >
-                  Hủy
-                </Button>
-                <Button 
-                  size="small" 
-                  variant="contained" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  sx={{ 
-                    fontSize: '0.75rem',
-                    minWidth: 60,
-                    height: 32
-                  }}
-                >
-                  Chọn
-                </Button>
-              </Box>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel sx={{ color: '#bbb' }}>Chọn quốc gia</InputLabel>
+            <Select
+              multiple
+              name="countryIds"
+              value={form.countryIds}
+              onChange={handleChange}
+              input={<OutlinedInput label="Chọn quốc gia" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((id) => {
+                    const country = countries.find(c => c.id === id);
+                    return (
+                      <Chip 
+                        key={id} 
+                        label={country ? country.name : id} 
+                        size="small"
+                        sx={{
+                          bgcolor: '#fff',
+                          color: '#333',
+                          '&:hover': {
+                            bgcolor: '#f5f5f5'
+                          }
+                        }}
+                      />
+                    );
+                  })}
+                </Box>
+              )}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 400,
+                  },
+                },
+                sx: {
+                  '& .MuiMenu-paper': {
+                    bgcolor: '#fff',
+                    color: '#111',
+                  }
+                }
+              }}
+              sx={{
+                '& .MuiInputBase-input': { color: '#fff' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#444' },
+                  '&:hover fieldset': { borderColor: '#2196f3' },
+                  '&.Mui-focused fieldset': { borderColor: '#2196f3' }
+                }
+              }}
+            >
+              {countries.map((country) => (
+                <MenuItem key={country.id} value={country.id} sx={{ color: '#111' }}>
+                  {country.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </DialogContent>
