@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+const API = import.meta.env.VITE_API_URL || '${API}';
+
 import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, CardActions, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Toolbar, Autocomplete, Tabs, Tab, Switch } from '@mui/material';
 import axios from 'axios';
 import MovieTable from '../components/MovieTable';
@@ -64,7 +66,7 @@ export default function Admin() {
   const [userForm, setUserForm] = useState({ username: '', email: '', gender: '' });
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/users');
+      const res = await axios.get('${API}/api/users');
       setUsers(res.data);
     } catch (err) {
       setUserError(err.response?.data?.message || 'Lỗi');
@@ -73,7 +75,7 @@ export default function Admin() {
   useEffect(() => { if (selectedMenu === 'users') fetchUsers(); }, [selectedMenu]);
   const handleToggleAdmin = async (user) => {
     try {
-      await axios.put(`http://localhost:5000/api/users/${user.id}/admin`, { is_admin: !user.is_admin });
+      await axios.put(`${API}/api/users/${user.id}/admin`, { is_admin: !user.is_admin });
       fetchUsers();
     } catch (err) {
       setUserError(err.response?.data?.message || 'Lỗi');
@@ -82,7 +84,7 @@ export default function Admin() {
   const handleDeleteUser = async (id) => {
     if (!window.confirm('Xóa tài khoản này?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/users/${id}`);
+      await axios.delete(`${API}/api/users/${id}`);
       fetchUsers();
     } catch (err) {
       setUserError(err.response?.data?.message || 'Lỗi');
@@ -106,10 +108,10 @@ export default function Admin() {
       const oldUser = users.find(u => u.id === userEditId);
       // Nếu quyền admin thay đổi, cập nhật quyền trước
       if (typeof userForm.is_admin !== 'undefined' && oldUser && (Boolean(userForm.is_admin) !== Boolean(oldUser.is_admin))) {
-        await axios.put(`http://localhost:5000/api/users/${userEditId}/admin`, { is_admin: userForm.is_admin });
+        await axios.put(`${API}/api/users/${userEditId}/admin`, { is_admin: userForm.is_admin });
       }
       // Cập nhật các trường khác
-      await axios.put(`http://localhost:5000/api/users/${userEditId}`, {
+      await axios.put(`${API}/api/users/${userEditId}`, {
         username: userForm.username,
         email: userForm.email,
         gender: userForm.gender
@@ -123,10 +125,10 @@ export default function Admin() {
   // Lấy dữ liệu liên kết khi mở form
   const fetchRelations = async () => {
     const [g, c, a, d] = await Promise.all([
-      axios.get('http://localhost:5000/api/genres'),
-      axios.get('http://localhost:5000/api/countries'),
-      axios.get('http://localhost:5000/api/actors'),
-      axios.get('http://localhost:5000/api/directors'),
+      axios.get('${API}/api/genres'),
+      axios.get('${API}/api/countries'),
+      axios.get('${API}/api/actors'),
+      axios.get('${API}/api/directors'),
     ]);
     setGenres(g.data);
     setCountries(c.data);
@@ -135,25 +137,25 @@ export default function Admin() {
   };
 
   const fetchMovies = () => {
-    axios.get('http://localhost:5000/api/movies').then(res => setMovies(res.data));
+    axios.get('${API}/api/movies').then(res => setMovies(res.data));
   };
 
   // Lấy danh sách banner
   const fetchBanners = async () => {
-    const res = await axios.get('http://localhost:5000/api/banners');
+    const res = await axios.get('${API}/api/banners');
     setBanners(res.data);
   };
 
   // Lấy danh sách phim cho select movie
   const [allMovies, setAllMovies] = useState([]);
   const fetchAllMovies = async () => {
-    const res = await axios.get('http://localhost:5000/api/movies');
+    const res = await axios.get('${API}/api/movies');
     setAllMovies(res.data);
   };
 
   // Lấy danh sách tập phim cho 1 movie
   const fetchEpisodes = async (movieId) => {
-    const res = await axios.get(`http://localhost:5000/api/movies/${movieId}/episodes`);
+    const res = await axios.get(`${API}/api/movies/${movieId}/episodes`);
     setEpisodes(res.data);
   };
   const handleManageEpisodes = async (movie) => {
@@ -167,27 +169,27 @@ export default function Admin() {
     setEpisodes([]);
   };
   const handleAddEpisode = async (form) => {
-    await axios.post(`http://localhost:5000/api/movies/${episodeMovie.id}/episodes`, form);
+    await axios.post(`${API}/api/movies/${episodeMovie.id}/episodes`, form);
     await fetchEpisodes(episodeMovie.id);
   };
   const handleEditEpisode = async (id, form) => {
-    await axios.put(`http://localhost:5000/api/episodes/${id}`, form);
+    await axios.put(`${API}/api/episodes/${id}`, form);
     await fetchEpisodes(episodeMovie.id);
   };
   const handleDeleteEpisode = async (id) => {
     if (!window.confirm('Xóa tập này?')) return;
-    await axios.delete(`http://localhost:5000/api/episodes/${id}`);
+    await axios.delete(`${API}/api/episodes/${id}`);
     await fetchEpisodes(episodeMovie.id);
   };
 
   // Fetch data cho từng tab
   const fetchCategories = async () => {
     const [g, c, p, a, d] = await Promise.all([
-      axios.get('http://localhost:5000/api/genres'),
-      axios.get('http://localhost:5000/api/countries'),
-      axios.get('http://localhost:5000/api/producers'),
-      axios.get('http://localhost:5000/api/actors'),
-      axios.get('http://localhost:5000/api/directors'),
+      axios.get('${API}/api/genres'),
+      axios.get('${API}/api/countries'),
+      axios.get('${API}/api/producers'),
+      axios.get('${API}/api/actors'),
+      axios.get('${API}/api/directors'),
     ]);
     setGenresList(g.data);
     setCountriesList(c.data);
@@ -217,9 +219,9 @@ export default function Admin() {
         url = 'directors'; data = { name: catForm.name, profile_pic_url: catForm.profile_pic_url, bio: catForm.bio };
       }
       if (catEditId) {
-        await axios.put(`http://localhost:5000/api/${url}/${catEditId}`, data);
+        await axios.put(`${API}/api/${url}/${catEditId}`, data);
       } else {
-        await axios.post(`http://localhost:5000/api/${url}`, data);
+        await axios.post(`${API}/api/${url}`, data);
       }
       fetchCategories(); handleCatCancel();
     } catch (err) {
@@ -234,7 +236,7 @@ export default function Admin() {
     else if (selectedTab === 2) url = 'producers';
     else if (selectedTab === 3) url = 'actors';
     else if (selectedTab === 4) url = 'directors';
-    await axios.delete(`http://localhost:5000/api/${url}/${id}`);
+    await axios.delete(`${API}/api/${url}/${id}`);
     fetchCategories();
   };
 
@@ -249,7 +251,7 @@ export default function Admin() {
   const [statsError, setStatsError] = useState('');
   useEffect(() => {
     if (selectedMenu === 'dashboard') {
-      axios.get('http://localhost:5000/api/admin/stats')
+      axios.get('${API}/api/admin/stats')
         .then(res => setStats(res.data))
         .catch(err => setStatsError(err.response?.data?.message || 'Lỗi'));
     }
@@ -306,9 +308,9 @@ export default function Admin() {
       let movieId = editMovie?.id;
       const movieData = safeMovieData(form);
       if (editMovie) {
-        await axios.put(`http://localhost:5000/api/movies/${editMovie.id}`, { ...movieData, is_admin: true });
+        await axios.put(`${API}/api/movies/${editMovie.id}`, { ...movieData, is_admin: true });
       } else {
-        const res = await axios.post('http://localhost:5000/api/movies', { ...movieData, is_admin: true });
+        const res = await axios.post('${API}/api/movies', { ...movieData, is_admin: true });
         movieId = res.data.id || null;
         if (!movieId) {
           await fetchMovies();
@@ -318,10 +320,10 @@ export default function Admin() {
       }
       // Gắn các liên kết
       if (movieId) {
-        await axios.post(`http://localhost:5000/api/movies/${movieId}/genres`, { genre_ids: selectedGenres.map(g => g.id) });
-        await axios.post(`http://localhost:5000/api/movies/${movieId}/countries`, { country_ids: selectedCountries.map(c => c.id) });
-        await axios.post(`http://localhost:5000/api/movies/${movieId}/actors`, { actor_ids: selectedActors.map(a => a.id) });
-        await axios.post(`http://localhost:5000/api/movies/${movieId}/directors`, { director_ids: selectedDirectors.map(d => d.id) });
+        await axios.post(`${API}/api/movies/${movieId}/genres`, { genre_ids: selectedGenres.map(g => g.id) });
+        await axios.post(`${API}/api/movies/${movieId}/countries`, { country_ids: selectedCountries.map(c => c.id) });
+        await axios.post(`${API}/api/movies/${movieId}/actors`, { actor_ids: selectedActors.map(a => a.id) });
+        await axios.post(`${API}/api/movies/${movieId}/directors`, { director_ids: selectedDirectors.map(d => d.id) });
       }
       fetchMovies(); handleClose();
     } catch (err) {
@@ -332,7 +334,7 @@ export default function Admin() {
   const handleDelete = async (id) => {
     if (!window.confirm('Xóa phim này?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/movies/${id}?is_admin=true`);
+      await axios.delete(`${API}/api/movies/${id}?is_admin=true`);
       fetchMovies();
     } catch (err) {
       setError(err.response?.data?.message || 'Lỗi');
@@ -370,9 +372,9 @@ export default function Admin() {
         thumbnails: bannerForm.thumbnails ? [bannerForm.thumbnails] : []
       };
       if (editBanner) {
-        await axios.put(`http://localhost:5000/api/banners/${editBanner.id}`, data);
+        await axios.put(`${API}/api/banners/${editBanner.id}`, data);
       } else {
-        await axios.post('http://localhost:5000/api/banners', data);
+        await axios.post('${API}/api/banners', data);
       }
       fetchBanners(); handleBannerClose();
     } catch (err) {
@@ -382,7 +384,7 @@ export default function Admin() {
   const handleBannerDelete = async (id) => {
     if (!window.confirm('Xóa banner này?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/banners/${id}`);
+      await axios.delete(`${API}/api/banners/${id}`);
       fetchBanners();
     } catch (err) {
       setBannerError(err.response?.data?.message || 'Lỗi');

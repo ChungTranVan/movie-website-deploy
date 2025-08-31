@@ -12,7 +12,9 @@ import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+const API = import.meta.env.VITE_API_URL || '${API}';
+
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
 import ForgotPasswordDialog from './ForgotPasswordDialog';
@@ -70,13 +72,13 @@ export default function Header() {
 
   useEffect(() => {
     // Fetch countries
-    fetch('http://localhost:5000/api/countries')
+    fetch('${API}/api/countries')
       .then(res => res.json())
       .then(data => setCountries(data))
       .catch(err => console.error('Lỗi lấy quốc gia:', err));
     
     // Fetch genres
-    fetch('http://localhost:5000/api/genres')
+    fetch('${API}/api/genres')
       .then(res => res.json())
       .then(data => setGenres(data))
       .catch(err => console.error('Lỗi lấy thể loại:', err));

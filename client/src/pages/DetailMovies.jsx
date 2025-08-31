@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./DetailMovies.css";
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const DetailMovies = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const DetailMovies = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5000/api/movie/${id}`)
+    fetch(`${API}/api/movie/${id}`)
       .then(res => res.json())
       .then(json => {
         setData(json);
