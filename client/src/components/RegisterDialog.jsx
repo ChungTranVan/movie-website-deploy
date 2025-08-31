@@ -4,8 +4,6 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { useState } from 'react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export default function RegisterDialog({ open, onClose, onLogin }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -22,7 +20,7 @@ export default function RegisterDialog({ open, onClose, onLogin }) {
       return;
     }
     try {
-      await axios.post(`${API}/api/auth/register`, { username, password, email });
+      await axios.post('http://localhost:5000/api/auth/register', { username, password, email });
       setSuccess('Đăng ký thành công!');
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng ký thất bại');

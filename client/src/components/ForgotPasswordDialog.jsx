@@ -4,8 +4,6 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { useState } from 'react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export default function ForgotPasswordDialog({ open, onClose, onLogin }) {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -15,7 +13,7 @@ export default function ForgotPasswordDialog({ open, onClose, onLogin }) {
     e.preventDefault();
     setMessage(''); setError('');
     try {
-      await axios.post(`${API}/api/auth/forgot-password`, { email });
+      await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
       setMessage('Nếu email tồn tại, hướng dẫn đặt lại mật khẩu đã được gửi!');
     } catch (err) {
       setError(err.response?.data?.message || 'Có lỗi xảy ra');

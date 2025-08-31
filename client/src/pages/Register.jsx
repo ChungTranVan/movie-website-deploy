@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -15,7 +13,7 @@ export default function Register() {
     e.preventDefault();
     setError(''); setSuccess('');
     try {
-      await axios.post(`${API}/api/auth/register`, { username, password, email });
+      await axios.post('http://localhost:5000/api/auth/register', { username, password, email });
       setSuccess('Đăng ký thành công!');
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng ký thất bại');

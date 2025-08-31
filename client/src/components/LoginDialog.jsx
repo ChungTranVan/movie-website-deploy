@@ -4,8 +4,6 @@ import MovieIcon from '@mui/icons-material/Movie';
 import { useState } from 'react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export default function LoginDialog({ open, onClose, onRegister, onForgot }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +14,7 @@ export default function LoginDialog({ open, onClose, onRegister, onForgot }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${API}/api/auth/login`, { username: email, password });
+      const res = await axios.post('http://localhost:5000/api/auth/login', { username: email, password });
       localStorage.setItem('user', JSON.stringify(res.data));
       onClose();
       window.location.reload();

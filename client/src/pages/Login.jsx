@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +11,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${API}/api/auth/login`, { username, password });
+      const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
       localStorage.setItem('user', JSON.stringify(res.data));
       window.location.href = '/movies';
     } catch (err) {

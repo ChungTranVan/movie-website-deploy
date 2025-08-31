@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '${API}';
 
 import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, CardActions, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Toolbar, Autocomplete, Tabs, Tab, Switch } from '@mui/material';
 import axios from 'axios';
@@ -66,7 +66,7 @@ export default function Admin() {
   const [userForm, setUserForm] = useState({ username: '', email: '', gender: '' });
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(`${API}/api/users`);
+      const res = await axios.get('${API}/api/users');
       setUsers(res.data);
     } catch (err) {
       setUserError(err.response?.data?.message || 'Lỗi');
@@ -125,10 +125,10 @@ export default function Admin() {
   // Lấy dữ liệu liên kết khi mở form
   const fetchRelations = async () => {
     const [g, c, a, d] = await Promise.all([
-      axios.get(`${API}/api/genres`),
-      axios.get(`${API}/api/countries`),
-      axios.get(`${API}/api/actors`),
-      axios.get(`${API}/api/directors`),
+      axios.get('${API}/api/genres'),
+      axios.get('${API}/api/countries'),
+      axios.get('${API}/api/actors'),
+      axios.get('${API}/api/directors'),
     ]);
     setGenres(g.data);
     setCountries(c.data);
@@ -137,19 +137,19 @@ export default function Admin() {
   };
 
   const fetchMovies = () => {
-    axios.get(`${API}/api/movies`).then(res => setMovies(res.data));
+    axios.get('${API}/api/movies').then(res => setMovies(res.data));
   };
 
   // Lấy danh sách banner
   const fetchBanners = async () => {
-    const res = await axios.get(`${API}/api/banners`);
+    const res = await axios.get('${API}/api/banners');
     setBanners(res.data);
   };
 
   // Lấy danh sách phim cho select movie
   const [allMovies, setAllMovies] = useState([]);
   const fetchAllMovies = async () => {
-    const res = await axios.get(`${API}/api/movies`);
+    const res = await axios.get('${API}/api/movies');
     setAllMovies(res.data);
   };
 
@@ -185,11 +185,11 @@ export default function Admin() {
   // Fetch data cho từng tab
   const fetchCategories = async () => {
     const [g, c, p, a, d] = await Promise.all([
-      axios.get(`${API}/api/genres`),
-      axios.get(`${API}/api/countries`),
-      axios.get(`${API}/api/producers`),
-      axios.get(`${API}/api/actors`),
-      axios.get(`${API}/api/directors`),
+      axios.get('${API}/api/genres'),
+      axios.get('${API}/api/countries'),
+      axios.get('${API}/api/producers'),
+      axios.get('${API}/api/actors'),
+      axios.get('${API}/api/directors'),
     ]);
     setGenresList(g.data);
     setCountriesList(c.data);
@@ -251,7 +251,7 @@ export default function Admin() {
   const [statsError, setStatsError] = useState('');
   useEffect(() => {
     if (selectedMenu === 'dashboard') {
-      axios.get(`${API}/api/admin/stats`)
+      axios.get('${API}/api/admin/stats')
         .then(res => setStats(res.data))
         .catch(err => setStatsError(err.response?.data?.message || 'Lỗi'));
     }
@@ -310,7 +310,7 @@ export default function Admin() {
       if (editMovie) {
         await axios.put(`${API}/api/movies/${editMovie.id}`, { ...movieData, is_admin: true });
       } else {
-        const res = await axios.post(`${API}/api/movies`, { ...movieData, is_admin: true });
+        const res = await axios.post('${API}/api/movies', { ...movieData, is_admin: true });
         movieId = res.data.id || null;
         if (!movieId) {
           await fetchMovies();
@@ -374,7 +374,7 @@ export default function Admin() {
       if (editBanner) {
         await axios.put(`${API}/api/banners/${editBanner.id}`, data);
       } else {
-        await axios.post(`${API}/api/banners`, data);
+        await axios.post('${API}/api/banners', data);
       }
       fetchBanners(); handleBannerClose();
     } catch (err) {

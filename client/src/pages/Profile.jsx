@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || '${API}';
 
 import Header from '../components/Header';
 import './WatchMovie.css';
@@ -53,7 +53,7 @@ export default function Profile() {
       setLoading(false);
       return;
     }
-    fetch(`${API}/api/user/profile`, {
+    fetch('${API}/api/user/profile', {
       credentials: 'include',
       headers: { 'x-user-id': user.id }
     })
@@ -94,7 +94,7 @@ export default function Profile() {
       return;
     }
     try {
-      const res = await fetch(`${API}/api/user/profile`, {
+      const res = await fetch('${API}/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'x-user-id': user.id },
         credentials: 'include',
@@ -142,7 +142,7 @@ export default function Profile() {
     }
     setChangePwLoading(true);
     try {
-      const res = await fetch(`${API}/api/user/change-password`, {
+      const res = await fetch('${API}/api/user/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-user-id': user.id },
         credentials: 'include',
