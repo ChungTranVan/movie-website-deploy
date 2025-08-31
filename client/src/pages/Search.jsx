@@ -5,6 +5,8 @@ import './Movies.css';
 import { Link, useLocation } from 'react-router-dom';
 import FilterBox from '../components/Filter/FilterBox';
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const PAGE_SIZE = 16;
 
 function useQuery() {

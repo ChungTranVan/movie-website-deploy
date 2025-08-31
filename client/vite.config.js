@@ -13,6 +13,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
   },
+  base: './',
   preview: {
     port: 3000,
     host: true,
