@@ -6,7 +6,7 @@ export default function MovieForm({ open, form, editMovie, error, onChange, onCl
       <DialogTitle>{editMovie ? 'Sửa phim' : 'Thêm phim'}</DialogTitle>
       <DialogContent>
         <TextField label="Tên phim" name="title" fullWidth margin="normal" value={form.title} onChange={onChange} />
-        <TextField label="Tên tiếng Anh" name="original_title" fullWidth margin="normal" value={form.original_title || ''} onChange={onChange} />
+        <TextField label="Tên khác" name="original_title" fullWidth margin="normal" value={form.original_title || ''} onChange={onChange} />
         <TextField label="Giới hạn tuổi" name="age_limit" fullWidth margin="normal" value={form.age_limit || ''} onChange={onChange} />
         <TextField label="Năm phát hành" name="release_year" type="number" fullWidth margin="normal" value={form.release_year || ''} onChange={onChange} />
         <TextField label="Chất lượng (VD: 4K, HD)" name="quality" fullWidth margin="normal" value={form.quality || ''} onChange={onChange} />
