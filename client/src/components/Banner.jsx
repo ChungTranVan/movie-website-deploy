@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-const API = import.meta.env.VITE_API_URL || '${API}';
+import React, { useState, useEffect, useRef  } from 'react';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 import { Box, Typography, Button, Stack, Chip, IconButton } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -49,7 +49,7 @@ export default function Banner() {
   const [dragging, setDragging] = React.useState(false);
 
   useEffect(() => {
-    fetch('${API}/api/banners')
+    fetch(`${API}/api/banners`)
       .then(res => res.json())
       .then(data => setBanners(data.map(snakeToCamel).map(parseBannerFields)))
       .catch(err => console.error('Lỗi fetch banner:', err));

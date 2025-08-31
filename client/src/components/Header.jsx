@@ -12,8 +12,8 @@ import AddIcon from '@mui/icons-material/Add';
 import HistoryIcon from '@mui/icons-material/History';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useState, useEffect } from 'react';
-const API = import.meta.env.VITE_API_URL || '${API}';
+import React, { useState, useEffect, useRef } from 'react';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
@@ -72,13 +72,13 @@ export default function Header() {
 
   useEffect(() => {
     // Fetch countries
-    fetch('${API}/api/countries')
+    fetch(`${API}/api/countries`)
       .then(res => res.json())
       .then(data => setCountries(data))
       .catch(err => console.error('Lỗi lấy quốc gia:', err));
     
     // Fetch genres
-    fetch('${API}/api/genres')
+    fetch(`${API}/api/genres`)
       .then(res => res.json())
       .then(data => setGenres(data))
       .catch(err => console.error('Lỗi lấy thể loại:', err));
@@ -381,7 +381,7 @@ export default function Header() {
           <Box className="header-user">
             <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
               {user && user.username ? (
-                <>
+                <React.Fragment>
                   <IconButton
                     className="header-notification-btn"
                     onClick={handleNotificationClick}
@@ -427,12 +427,12 @@ export default function Header() {
                       <AccountCircleIcon sx={{ mr: 1, color: '#fff' }} /> Tài khoản
                     </MenuItem>
                     {Boolean(user.is_admin) && (
-                      <>
+                      <React.Fragment>
                         <Divider sx={{ bgcolor: '#333' }} />
                         <MenuItem sx={{ py: 1.2 }} onClick={() => { navigate('/admin'); handleUserClose(); }}>
                           <BarChartIcon sx={{ mr: 1, color: '#fff' }} /> Admin Dashboard
                         </MenuItem>
-                      </>
+                      </React.Fragment>
                     )}
                     <Divider sx={{ bgcolor: '#333' }} />
                     <MenuItem sx={{ py: 1.2, color: '#fff', transition: 'color 0.18s', '&:hover': { color: '#FFD600', bgcolor: 'transparent' } }} onClick={handleLogout}>
@@ -481,7 +481,7 @@ export default function Header() {
                       Xem toàn bộ
                     </Box>
                   </Menu>
-                </>
+                </React.Fragment>
               ) : (
                 <Button
                   variant="contained"

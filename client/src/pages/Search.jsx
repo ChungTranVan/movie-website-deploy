@@ -5,6 +5,8 @@ import './Movies.css';
 import { Link, useLocation } from 'react-router-dom';
 import FilterBox from '../components/Filter/FilterBox';
 
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const PAGE_SIZE = 16;
 
 function useQuery() {
@@ -30,7 +32,7 @@ export default function Search() {
 
   useEffect(() => {
     if (tab === 'actor') {
-      fetch('${API}/api/actors')
+      fetch(`${API}/api/actors`)
         .then(res => res.json())
         .then(data => setActors(data));
     }
@@ -43,7 +45,7 @@ export default function Search() {
   };
 
   useEffect(() => {
-    fetch('${API}/api/movies')
+    fetch(`${API}/api/movies`)
       .then(res => res.json())
       .then(data => {
         setMovies(data);
@@ -60,7 +62,7 @@ export default function Search() {
 
   const [allActors, setAllActors] = useState([]);
   useEffect(() => {
-    fetch('${API}/api/actors')
+    fetch(`${API}/api/actors`)
       .then(res => res.json())
       .then(data => setAllActors(data));
   }, []);
