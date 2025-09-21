@@ -1,5 +1,26 @@
 {
+  "name": "movie-website",
+  "version": "1.0.0",
+  "description": "Full-stack movie website with React frontend and Express backend",
+  "scripts": {
+    "build": "yarn build:client && yarn build:server",
+    "build:client": "cd client && yarn install && yarn build",
+    "build:server": "cd server && yarn install",
+    "start": "cd server && yarn start",
+    "dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
+    "dev:server": "cd server && yarn dev",
+    "dev:client": "cd client && yarn dev",
+    "postinstall": "cd client && yarn install && cd ../server && yarn install"
+  },
   "dependencies": {
     "swiper": "^11.2.10"
-  }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
+  },
+  "packageManager": "yarn@1.22.19"
 }
